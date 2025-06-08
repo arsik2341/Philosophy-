@@ -1,0 +1,137 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мудрость сквозь века</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Georgia, serif;
+            background-color: #726d67; /* тёплый серо-коричневый фон */
+            color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 40px;
+            font-size: 36px;
+            color: #e5d8c5; /* светлый теплый для заголовка */
+        }
+        p.description {
+            max-width: 600px;
+            font-size: 18px;
+            margin: 10px 20px 30px 20px;
+            color: #d0c5b5; /* мягкий светлый серо-бежевый */
+        }
+        select {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 24px;
+            margin-bottom: 20px;
+            border: 2px solid #5a3f31;
+            border-radius: 8px;
+            background-color: #3e2d24;
+            color: #f5f5f5;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #5a3f31;
+            color: #f5f5f5;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        .quote-container {
+            background-color: #2f211b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px;
+            max-width: 600px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        .quote-text {
+            font-size: 22px;
+            margin-bottom: 15px;
+            font-style: italic;
+            color: #f0e6d2;
+        }
+        .quote-author {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #e5d8c5;
+        }
+        .quote-source {
+            font-size: 16px;
+            color: #c2b6a6;
+            font-style: italic;
+        }
+        footer {
+            margin-top: auto;
+            padding: 20px;
+            font-size: 14px;
+            color: #b5aba1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мудрость сквозь века</h1>
+    <p class="description">Слушай голоса сквозь века. Вопросы, ответы и сомнения — ключи к новому восприятию мира.</p>
+    <select id="categorySelect">
+        <option value="stoicism">Стоицизм</option>
+        <option value="eastern">Восточная философия</option>
+        <option value="skepticism">Скептицизм</option>
+        <option value="existentialism">Экзистенциализм</option>
+    </select>
+    <div class="quote-container" id="quoteContainer">
+        <div class="quote-text" id="quoteText">Загрузка цитаты...</div>
+        <div class="quote-author" id="quoteAuthor"></div>
+        <div class="quote-source" id="quoteSource"></div>
+    </div>
+    <button onclick="showRandomQuote()">Новая цитата</button>
+    <footer>wisdom.project</footer>
+
+    <script src="quotes_FULL_FOR_GITHUB.js"></script>
+    <script>
+        let lastQuoteIndex = -1;
+
+        function showRandomQuote() {
+            const category = document.getElementById('categorySelect').value;
+            const currentQuotes = quotes[category];
+            
+            if (!currentQuotes || currentQuotes.length === 0) {
+                document.getElementById('quoteText').innerText = 'Нет цитат для данной категории.';
+                document.getElementById('quoteAuthor').innerText = '';
+                document.getElementById('quoteSource').innerText = '';
+                return;
+            }
+
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * currentQuotes.length);
+            } while (randomIndex === lastQuoteIndex && currentQuotes.length > 1);
+
+            lastQuoteIndex = randomIndex;
+            const quote = currentQuotes[randomIndex];
+
+            document.getElementById('quoteText').innerText = quote.text.replace(/^"|"$/g, '');
+            document.getElementById('quoteAuthor').innerText = '— ' + quote.author;
+            document.getElementById('quoteSource').innerText = quote.source;
+        }
+
+        // Показываем первую цитату при загрузке
+        showRandomQuote();
+    </script>
+</body>
+</html>
