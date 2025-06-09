@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Мудрость сквозь века</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Georgia', serif;
+            background-color: #2e2b29;
+            background-image: url('img/background.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #e3d5c0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #f0e6d2;
+        }
+        p.description {
+            font-size: 1em;
+            max-width: 600px;
+            text-align: center;
+            color: #c2b6a4;
+            margin-bottom: 20px;
+        }
+        select, button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+        select {
+            background-color: #4a3f35;
+            color: #f0e6d2;
+        }
+        button {
+            background-color: #66503c;
+            color: #f0e6d2;
+        }
+        .quote-box {
+            background-color: rgba(62, 53, 47, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            margin-top: 20px;
+            text-align: center;
+            position: relative;
+        }
+        .quote-text {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .quote-author {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .quote-source {
+            font-size: 0.9em;
+            color: #b9ada0;
+        }
+        .copy-icon {
+            font-size: 1.5em;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Мудрость сквозь века</h1>
+    <p class="description">Слушай голоса сквозь века. Вопросы, ответы и сомнения — ключи к новому восприятию мира.</p>
+    <select id="categorySelect"></select>
+    <select id="authorSelect"></select>
+    <div class="quote-box" id="quoteBox">
+        <div class="quote-text" id="quoteText">Загрузка цитаты...</div>
+        <div class="quote-author" id="quoteAuthor"></div>
+        <div class="quote-source" id="quoteSource"></div>
+        <div class="copy-icon" id="copyIcon">📋</div>
+    </div>
+    <button onclick="showNewQuote()">Новая цитата</button>
+
+    <script src="quotes_FULL_FOR_GITHUB.js"></script>
+    <script>
+        if (typeof quotes === "undefined") {
+            document.getElementById("quoteText").textContent = "Ошибка: quotes_FULL_FOR_GITHUB.js не загружен.";
+            document.getElementById("quoteAuthor").textContent = "";
+            document.getElementById("quoteSource").textContent = "";
+        } else {
+            const categorySelect = document.getElementById("categorySelect");
+            const authorSelect = document.getElementById("authorSelect");
+            const quoteText = document.getElementById("quoteText");
+            const quoteAuthor = document.getElementById("quoteAuthor");
+            const quoteSource = document.getElementById("quoteSource");
+            const copyIcon = document.getElementById("copyIcon");
+
+            let currentQuotes = [];
+            let shownQuotes = [];
+
+            function initCategories() {
+                categorySelect.innerHTML = "";
+                Object.keys(quotes).forEach(category => {
+                    const option = document.createElement("option");
+                    option.value = category;
+                    option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                    categorySelect.appendChild(option);
+                });
+                categorySelect.addEventListener("change", updateAuthors);
+                authorSelect.addEventListener("change", () => showNewQuote(true));
+                updateAuthors();
+            }
+
+            function updateAuthors() {
+                const selectedCategory = categorySelect.value;
+                currentQuotes = quotes[selectedCategory] || [];
+                shownQuotes = [];
+                const authors = [...new Set(currentQuotes.map(q => q.author))];
+                authorSelect.innerHTML = "";
+                const allOption = document.createElement("option");
+                allOption.value = "all";
+                allOption.textContent = "Все авторы";
+                authorSelect.appendChild(allOption);
+                authors.forEach(author => {
+                    const option = document.createElement("option");
+                    option.value = author;
+                    option.textContent = author;
+                    authorSelect.appendChild(option);
+                });
+                showNewQuote(true);
+            }
+
+            function showNewQuote(force = false) {
+                const selectedAuthor = authorSelect.value;
+                let availableQuotes = currentQuotes.filter(q => selectedAuthor === "all" || q.author === selectedAuthor);
+                if (availableQuotes.length === 0) {
+                    quoteText.textContent = "Цитаты не найдены.";
+                    quoteAuthor.textContent = "";
+                    quoteSource.textContent = "";
+                    return;
+                }
+
+                let remainingQuotes = availableQuotes.filter(q => !shownQuotes.includes(q));
+                if (remainingQuotes.length === 0 || force) {
+                    shownQuotes = [];
+                    remainingQuotes = availableQuotes;
+                }
+
+                const randomQuote = remainingQuotes[Math.floor(Math.random() * remainingQuotes.length)];
+                quoteText.textContent = `"${randomQuote.text}"`;
+                quoteAuthor.textContent = `— ${randomQuote.author}`;
+                quoteSource.textContent = randomQuote.source;
+                shownQuotes.push(randomQuote);
+            }
+
+            copyIcon.addEventListener("click", () => {
+                const textToCopy = `${quoteText.textContent}
+${quoteAuthor.textContent}
+${quoteSource.textContent}`;
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    copyIcon.textContent = "✅";
+                    setTimeout(() => { copyIcon.textContent = "📋"; }, 1000);
+                });
+            });
+
+            initCategories();
+        }
+    </script>
+</body>
+</html>
